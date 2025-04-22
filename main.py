@@ -6,7 +6,7 @@ st.set_page_config(page_title="My Streamlit App", layout="wide")
 
 # Define file paths
 file_paths = ['/Users/mariolaczajkowska/anaconda_projects/python/project_mcz2/downloads/cleaned_airbnb_data.csv',
-              '/Users/mariolaczajkowska/anaconda_projects/python/project_mcz2/downloads/cleaned_airbnb_data_USA.csv']
+              '/Users/mariolaczajkowska/anaconda_projects/python/project_mcz2/downloads/cleaned_data_USA.csv']
 
 # Create an instance of the Airbnb app
 airbnb_app = AIRBNB(file_paths)
@@ -88,22 +88,22 @@ def main():
         st.rerun()
 
     # Filter the data based on selected options
-    filtered_data = airbnb_app.filter_data(
-        o_city, o_host, o_neighborhood, o_instant_bookable, o_cancellation_policy, 
-        o_room_type, o_minimum_nights, o_review_rate_number, o_price
-    )
+        
+    if st.button("Filter"):
+        filtered_data = airbnb_app.filter_data(
+            o_city, o_host, o_neighborhood, o_instant_bookable, o_cancellation_policy, 
+            o_room_type, o_minimum_nights, o_review_rate_number, o_price
+        )
 
-    with col2:
-        # Display the map or message based on filtered data
+        with col2:
+            if filtered_data is not None:
+                airbnb_app.display_map(filtered_data)
+
         if filtered_data is not None:
-            airbnb_app.display_map(filtered_data)
-
-    # Display a message if no data matches the filter criteria
-    if filtered_data is not None:
-        if filtered_data.empty:
-            st.warning("No results match your filters. Try changing the criteria")
-        else:
-            airbnb_app.display_data(filtered_data)
+            if filtered_data.empty:
+                st.warning("No results match your filters. Try changing the criteria")
+            else:
+                airbnb_app.display_data(filtered_data)
 
 if __name__ == "__main__":
     main()
