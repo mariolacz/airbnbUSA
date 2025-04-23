@@ -1,9 +1,9 @@
+
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-
-class AIRBNB:
+class AirbnbCharts:
 
     def __init__(self, file_paths):
         self.file_paths = file_paths
@@ -74,46 +74,20 @@ class AIRBNB:
             filtered_data = filtered_data[(pd.to_numeric(filtered_data['PRICE'], errors='coerce') >= min_price) & (pd.to_numeric(filtered_data['PRICE'], errors='coerce') <= max_price)]
         return filtered_data
     
+    def display_price_chart_by_city(self, filtered_data):
+        if filtered_data is not None and not filtered_data.empty:
+            filtered_data['PRICE'] = pd.to_numeric(filtered_data['PRICE'], errors='coerce')
+            df_grouped = filtered_data.groupby(['CITY', 'NEIGHBOURHOOD_GROUP'])['PRICE'].mean().reset_index()
 
-    def display_map(self, filtered_data):
-        if filtered_data is not None:
-            filtered_data['LAT'] = pd.to_numeric(filtered_data['LAT'])
-            filtered_data['LONG'] = pd.to_numeric(filtered_data['LONG'])
-            filtered_data['PRICE'] = pd.to_numeric(filtered_data['PRICE'])
-            
-            fig = px.scatter_mapbox(
-                filtered_data, lat='LAT', lon='LONG',
-                size='PRICE',  # Im większa kropka, tym wyższa cena
-                color='PRICE',  # Kolor wg ceny
-                color_continuous_scale="Viridis" # Wybór kolorów
+            fig = px.bar(
+                df_grouped,
+                x='NEIGHBOURHOOD_GROUP',
+                y='PRICE',
+                color='CITY',
+                barmode='group',
+                title='Avarage price for rent'
             )
 
-            fig.update_layout(
-                mapbox_style="open-street-map",  # Styl mapy
-                margin={"r":0,"t":0,"l":0,"b":0},
-                height=1000)
-
-        # Jeśli po filtracji dane są bardziej skoncentrowane, to zmieniamy zoom i center
-            if filtered_data.shape[0] > 0:  # jeśli są dane po filtracji
-                avg_lat = filtered_data['LAT'].mean()
-                avg_lon = filtered_data['LONG'].mean()
-
-                lat_std = filtered_data['LAT'].std()
-                lon_std = filtered_data['LONG'].std()
-
-                if lat_std < 0.1 and lon_std <0.1:
-                    zoom = 12
-                elif lat_std < 2 and lon_std <1:
-                    zoom = 5
-                else:
-                    zoom = 3
-
-                fig.update_layout(
-                    mapbox_center={"lat": avg_lat, "lon": avg_lon},
-                    mapbox_zoom=zoom  # Mniejszy zoom dla bardziej skoncentrowanych danych
-                )
-            elif filtered_data.shape[0] == 0:
-                    st.write("Sorry! No results found after applying filters. Please try agian ")
             st.plotly_chart(fig)
-
-
+        else:
+            st.info("Lack of data.")

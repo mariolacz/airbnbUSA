@@ -1,8 +1,16 @@
 import streamlit as st
 from application import AIRBNB
+from charts import AirbnbCharts
 
-# Set page config
 st.set_page_config(page_title="My Streamlit App", layout="wide")
+
+st.title("Rental prices in different US cities ")
+
+tab1, tab2 = st.tabs(["Filter options and map", "Charts"])
+
+with tab1:
+    st.header("Filter options and look at the map")
+
 
 # Define file paths
 file_paths = ['/Users/mariolaczajkowska/anaconda_projects/python/project_mcz2/downloads/cleaned_airbnb_data.csv',
@@ -70,6 +78,23 @@ def main():
         'minimum_nights': o_minimum_nights,
         'review_rate_number': o_review_rate_number
     })
+        # Filter the data based on selected options
+        
+    if st.button("Filter"):
+        filtered_data = airbnb_app.filter_data(
+            o_city, o_host, o_neighborhood, o_instant_bookable, o_cancellation_policy, 
+            o_room_type, o_minimum_nights, o_review_rate_number, o_price
+        )
+
+        with col2:
+            if filtered_data is not None:
+                airbnb_app.display_map(filtered_data)
+
+        if filtered_data is not None:
+            if filtered_data.empty:
+                st.warning("No results match your filters. Try changing the criteria")
+            else:
+                airbnb_app.display_data(filtered_data)
 
     # Reset filters button
     if st.button('Reset filters'):
@@ -87,23 +112,24 @@ def main():
         st.session_state['map_reset'] = True  
         st.rerun()
 
-    # Filter the data based on selected options
-        
-    if st.button("Filter"):
-        filtered_data = airbnb_app.filter_data(
-            o_city, o_host, o_neighborhood, o_instant_bookable, o_cancellation_policy, 
-            o_room_type, o_minimum_nights, o_review_rate_number, o_price
+
+with tab2:
+    st.header("Charts")
+
+    if tab2:
+        chart_app = AirbnbCharts(file_paths)
+        filtered_data = chart_app.filter_data(
+            st.session_state.filters['city'],
+            st.session_state.filters['host'],
+            st.session_state.filters['neighborhood'],
+            st.session_state.filters['instant_bookable'],
+            st.session_state.filters['cancellation_policy'],
+            st.session_state.filters['room_type'],
+            st.session_state.filters['minimum_nights'],
+            st.session_state.filters['review_rate_number'],
+            st.session_state.filters['price']
         )
-
-        with col2:
-            if filtered_data is not None:
-                airbnb_app.display_map(filtered_data)
-
-        if filtered_data is not None:
-            if filtered_data.empty:
-                st.warning("No results match your filters. Try changing the criteria")
-            else:
-                airbnb_app.display_data(filtered_data)
+        chart_app.display_price_chart_by_city(filtered_data)
 
 if __name__ == "__main__":
     main()
