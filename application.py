@@ -74,6 +74,7 @@ class AIRBNB:
             filtered_data = filtered_data[(pd.to_numeric(filtered_data['PRICE'], errors='coerce') >= min_price) & (pd.to_numeric(filtered_data['PRICE'], errors='coerce') <= max_price)]
         return filtered_data
     
+   
 
     def display_map(self, filtered_data):
         if filtered_data is not None:
@@ -116,4 +117,4 @@ class AIRBNB:
                     st.write("Sorry! No results found after applying filters. Please try agian ")
             st.plotly_chart(fig)
 
-
+        st.session_state["filtered_data"] = filtered_data
