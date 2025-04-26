@@ -32,8 +32,6 @@ if 'filters' not in st.session_state:
 
 with tab1:
     st.session_state["current_tab"] = "Filters"
-
-    st.header("Choose filters:")
     col1, col2 = st.columns([10, 15])
 
     with col1:
@@ -110,3 +108,5 @@ with tab2:
     filtered_data = st.session_state.get("filtered_data", airbnb_app.data)
 
     charts.display_price_chart_by_city(filtered_data)
+    charts.display_minimum_nights_by_neighbourhood(filtered_data)
+    charts.display_room_type_counts_by_neighbourhood(filtered_data)
