@@ -78,3 +78,22 @@ class AirbnbCharts:
         else:
             st.info("No data to display.")
 
+    def display_average_price_by_room_type(self, filtered_data):
+        if filtered_data is not None and not filtered_data.empty:
+
+            filtered_data['PRICE'] = pd.to_numeric(filtered_data['PRICE'], errors='coerce')
+            
+            df_grouped = filtered_data.groupby('ROOM_TYPE')['PRICE'].mean().reset_index()
+
+            fig = px.bar(
+                df_grouped,
+                x='ROOM_TYPE',
+                y='PRICE',
+                title='Average Price by Room Type',
+                labels={'PRICE': 'Average Price ($)', 'ROOM_TYPE': 'Room Type'},
+                color='ROOM_TYPE',
+                text_auto='.2s'     
+            )
+            st.plotly_chart(fig)
+        else:
+            st.info("No data to display.")

@@ -110,3 +110,4 @@ with tab2:
     charts.display_price_chart_by_city(filtered_data)
     charts.display_minimum_nights_by_neighbourhood(filtered_data)
     charts.display_room_type_counts_by_neighbourhood(filtered_data)
+    charts.display_average_price_by_room_type(filtered_data)
