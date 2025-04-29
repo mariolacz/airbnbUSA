@@ -15,7 +15,7 @@ class AirbnbCharts:
                 y='PRICE',
                 color='CITY',
                 barmode='group',
-                title='Average Price for Rent by Neighborhood'
+                title='Average price for rent by neighborhood'
             )
 
             st.plotly_chart(fig)
@@ -37,7 +37,7 @@ class AirbnbCharts:
                 y='MINIMUM_NIGHTS',
                 color='CITY',
                 barmode='group',
-                title='Average Minimum Nights by Neighbourhood Group'
+                title='Average minimum nights by neighbourhood group'
             )
 
             st.plotly_chart(fig)
@@ -71,7 +71,7 @@ class AirbnbCharts:
                 y='COUNT',
                 color='ROOM_TYPE',
                 barmode='group',
-                title='Number of Listings by Room Type and Neighbourhood Group'
+                title='Number of listings by room type and neighbourhood group'
             )
 
             st.plotly_chart(fig)
@@ -89,10 +89,26 @@ class AirbnbCharts:
                 df_grouped,
                 x='ROOM_TYPE',
                 y='PRICE',
-                title='Average Price by Room Type',
+                title='Average price by room type',
                 labels={'PRICE': 'Average Price ($)', 'ROOM_TYPE': 'Room Type'},
                 color='ROOM_TYPE',
                 text_auto='.2s'     
+            )
+            st.plotly_chart(fig)
+        else:
+            st.info("No data to display.")
+
+    def display_listing_count_by_neighbourhood_group(self, filtered_data):
+        if filtered_data is not None and not filtered_data.empty:
+            df_grouped = filtered_data.groupby('NEIGHBOURHOOD_GROUP').size().reset_index(name='COUNT')
+
+            fig = px.bar(
+                df_grouped,
+                x='NEIGHBOURHOOD_GROUP',
+                y='COUNT',
+                title='Number of listings by neighbourhood group',
+                text_auto=True,
+                color='NEIGHBOURHOOD_GROUP'
             )
             st.plotly_chart(fig)
         else:
