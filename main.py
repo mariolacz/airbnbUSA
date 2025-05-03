@@ -1,6 +1,8 @@
 import streamlit as st
 from application import AIRBNB
 from charts import AirbnbCharts
+import io
+
 
 st.set_page_config(page_title="My Streamlit App", layout="wide")
 st.title("Rental prices in different US cities")
@@ -71,6 +73,7 @@ with tab1:
     })
 
     if st.button("Filter"):
+
         filtered_data = airbnb_app.filter_data(
             o_city, o_host, o_neighborhood, o_instant_bookable, o_cancellation_policy,
             o_room_type, o_minimum_nights, o_review_rate_number, o_price
@@ -85,6 +88,17 @@ with tab1:
                 st.warning("No results match your filters. Try changing the criteria")
 
         airbnb_app.display_data(filtered_data)
+    
+    filtered_data_to_download = st.session_state.get("filtered_data", None)
+
+    if filtered_data_to_download is not None and not filtered_data_to_download.empty:
+        csv = filtered_data_to_download.to_csv(index=False)
+        st.download_button(
+            label="Download filtered data as CSV",
+            data=csv,
+            file_name='filtered_airbnb_data.csv',
+            mime='text/csv'
+        )
 
     if st.button("Reset filters"):
         st.session_state.filters = {
@@ -112,3 +126,4 @@ with tab2:
     charts.display_room_type_counts_by_neighbourhood(filtered_data)
     charts.display_average_price_by_room_type(filtered_data)
     charts.display_listing_count_by_neighbourhood_group(filtered_data)
+
