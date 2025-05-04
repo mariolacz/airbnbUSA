@@ -3,22 +3,18 @@ from application import AIRBNB
 from charts import AirbnbCharts
 import io
 
-
 st.set_page_config(page_title="My Streamlit App", layout="wide")
 st.title("Rental prices in different US cities")
 
-tab1, tab2 = st.tabs(["Filter options", "Charts"])
+tab1, tab2, tab3 = st.tabs(["Filter options", "Charts", "Top Listings"])
 
-# Ścieżki do plików
 file_paths = [
     '/Users/mariolaczajkowska/anaconda_projects/python/project_mcz2/downloads/cleaned_airbnb_data.csv',
     '/Users/mariolaczajkowska/anaconda_projects/python/project_mcz2/downloads/cleaned_data_USA.csv'
 ]
 
-# Inicjalizacja aplikacji
 airbnb_app = AIRBNB(file_paths)
 
-# Inicjalizacja domyślnych filtrów
 if 'filters' not in st.session_state:
     st.session_state.filters = {
         'city': airbnb_app.data['CITY'].unique().tolist(),
@@ -44,7 +40,6 @@ with tab1:
         room_type_options = airbnb_app.data['ROOM_TYPE'].unique().tolist()
         instant_bookable_options = airbnb_app.data['INSTANT_BOOKABLE'].unique().tolist()
 
-        # Filtry z ustawień sesji
         o_city = st.multiselect("City", city_options, default=st.session_state.filters['city'])
 
         if o_city:
@@ -59,7 +54,6 @@ with tab1:
         o_minimum_nights = st.slider('Minimum nights', min_value=0, max_value=365, step=1, value=st.session_state.filters['minimum_nights'])
         o_review_rate_number = st.slider('Rate number', min_value=0.0, max_value=5.0, step=0.1, value=st.session_state.filters['review_rate_number'])
 
-    # Zapisz filtry do session state
     st.session_state.filters.update({
         'city': o_city,
         'host': o_host,
@@ -83,12 +77,13 @@ with tab1:
 
         with col2:
             if filtered_data is not None and not filtered_data.empty:
+                st.info(f"🔎 {len(filtered_data)} listings found.")
                 airbnb_app.display_map(filtered_data)
             else:
                 st.warning("No results match your filters. Try changing the criteria")
 
         airbnb_app.display_data(filtered_data)
-    
+
     filtered_data_to_download = st.session_state.get("filtered_data", None)
 
     if filtered_data_to_download is not None and not filtered_data_to_download.empty:
@@ -118,12 +113,26 @@ with tab1:
 with tab2:
     st.session_state["current_tab"] = "Charts"
 
-    charts = AirbnbCharts()  # teraz bez argumentów
+    charts = AirbnbCharts()
     filtered_data = st.session_state.get("filtered_data", airbnb_app.data)
+
+    if filtered_data is not None and not filtered_data.empty:
+        st.info(f"Displaying charts for {len(filtered_data)} listings.")
 
     charts.display_price_chart_by_city(filtered_data)
     charts.display_minimum_nights_by_neighbourhood(filtered_data)
     charts.display_room_type_counts_by_neighbourhood(filtered_data)
     charts.display_average_price_by_room_type(filtered_data)
     charts.display_listing_count_by_neighbourhood_group(filtered_data)
+    
 
+with tab3:
+    st.session_state["current_tab"] = "Top listings"
+    charts = AirbnbCharts()
+    filtered_data = st.session_state.get("filtered_data", airbnb_app.data)
+
+    if filtered_data is not None and not filtered_data.empty:
+        st.info(f"Showing top listings out of {len(filtered_data)} results.")
+        charts.display_top_listings(filtered_data)
+    else:
+        st.warning("No data to show top listings.")
