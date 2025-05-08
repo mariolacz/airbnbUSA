@@ -119,12 +119,22 @@ with tab2:
     if filtered_data is not None and not filtered_data.empty:
         st.info(f"Displaying charts for {len(filtered_data)} listings.")
 
-    charts.display_price_chart_by_city(filtered_data)
-    charts.display_minimum_nights_by_neighbourhood(filtered_data)
-    charts.display_room_type_counts_by_neighbourhood(filtered_data)
-    charts.display_average_price_by_room_type(filtered_data)
-    charts.display_listing_count_by_neighbourhood_group(filtered_data)
-    
+        # Dropdowns for city and neighborhood group
+        city_list = filtered_data['CITY'].dropna().unique().tolist()
+        selected_city = st.selectbox("Select a city for analysis", options=["All"] + city_list)
+
+        if selected_city != "All":
+            filtered_data = filtered_data[filtered_data['CITY'] == selected_city]
+
+        # Display charts for filtered data
+        charts.display_price_chart_by_city(filtered_data)
+        charts.display_minimum_nights_by_neighbourhood(filtered_data)
+        charts.display_room_type_counts_by_neighbourhood(filtered_data)
+        charts.display_average_price_by_room_type(filtered_data)
+        charts.display_listing_count_by_neighbourhood_group(filtered_data)
+
+    else:
+        st.warning("No data available for chart visualization.")
 
 with tab3:
     st.session_state["current_tab"] = "Top listings"
