@@ -6,7 +6,7 @@ import io
 st.set_page_config(page_title="My Streamlit App", layout="wide")
 st.title("Rental prices in different US cities")
 
-tab1, tab2, tab3 = st.tabs(["Filter options", "Charts", "Top Listings"])
+tab1, tab2, tab3, tab4 = st.tabs(["Filter options", "Charts", "Top Listings", "Statistics"])
 
 file_paths = [
     '/Users/mariolaczajkowska/anaconda_projects/python/project_mcz2/downloads/cleaned_airbnb_data.csv',
@@ -146,3 +146,19 @@ with tab3:
         charts.display_top_listings(filtered_data)
     else:
         st.warning("No data to show top listings.")
+
+with tab4:
+    st.session_state["current_tab"] = 'Statistics"]'
+    filtered_data = st.session_state.get("filtered_data", airbnb_app.data)
+
+    if filtered_data is not None and not filtered_data.empty:
+        st.subheader("Summary Statistics")
+
+        st.write("Price")
+        st.write(filtered_data['PRICE'].describe())
+
+        st.write("Minimum nights Statistics")
+        st.write(filtered_data['MINIMUM_NIGHTS'].describe())
+
+    else:
+        st.warning("No data available to calculate statistics.")       
