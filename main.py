@@ -148,7 +148,7 @@ with tab3:
         st.warning("No data to show top listings.")
 
 with tab4:
-    st.session_state["current_tab"] = 'Statistics"]'
+    st.session_state["current_tab"] = 'Statistics'
     filtered_data = st.session_state.get("filtered_data", airbnb_app.data)
 
     if filtered_data is not None and not filtered_data.empty:
@@ -157,8 +157,18 @@ with tab4:
         st.write("Price")
         st.write(filtered_data['PRICE'].describe())
 
-        st.write("Minimum nights Statistics")
+        st.write("Minimum Nights")
         st.write(filtered_data['MINIMUM_NIGHTS'].describe())
 
+        st.subheader("'No information' Value Statistics")
+
+        # Oblicz procent "No information" w każdej kolumnie
+        no_info_percent = (filtered_data == "No information").mean() * 100
+        no_info_percent = no_info_percent[no_info_percent > 0].sort_values(ascending=False)
+
+        if not no_info_percent.empty:
+            st.dataframe(no_info_percent.rename("% 'No information'").round(2))
+        else:
+            st.success("No information' values weren't find in the filtered dataset!")  
     else:
-        st.warning("No data available to calculate statistics.")       
+        st.warning("No data available to calculate statistics.")
