@@ -173,3 +173,17 @@ class AirbnbCharts:
             )
         else:
             st.info("No data to display.")
+    def display_missing_data_chart(self, filtered_data):
+        if filtered_data is not None and not filtered_data.empty:
+            missing = filtered_data.isnull().mean() * 100
+            missing = missing[missing > 0].sort_values(ascending=False).reset_index()
+            missing.columns = ['Column', 'Missing %']
+
+            fig = px.bar(
+                missing,
+                x='Column',
+                y='Missing %',
+                title='Percentage of Missing Data by Column',
+                text_auto='.1f'
+            )
+            st.plotly_chart(fig)

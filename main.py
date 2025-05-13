@@ -169,6 +169,20 @@ with tab4:
         if not no_info_percent.empty:
             st.dataframe(no_info_percent.rename("% 'No information'").round(2))
         else:
-            st.success("No information' values weren't find in the filtered dataset!")  
+            st.success("No information' values weren't find in the filtered dataset!")
+
+
+        # Calculate the percentage of verified hosts
+        verified_ratio = (
+            filtered_data['HOST_IDENTITY_VERIFIED'].value_counts(normalize=True)
+            .get('verified', 0) * 100
+        )
+
+        # Display it as a Streamlit metric
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(label="Verified Hosts", value=f"{verified_ratio:.1f}%")
+        with col2:
+            st.metric(label="Total Listings", value=len(filtered_data))  
     else:
         st.warning("No data available to calculate statistics.")
