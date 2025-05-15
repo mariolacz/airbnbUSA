@@ -173,17 +173,16 @@ class AirbnbCharts:
             )
         else:
             st.info("No data to display.")
-    def display_missing_data_chart(self, filtered_data):
-        if filtered_data is not None and not filtered_data.empty:
-            missing = filtered_data.isnull().mean() * 100
-            missing = missing[missing > 0].sort_values(ascending=False).reset_index()
-            missing.columns = ['Column', 'Missing %']
+  
+    def display_correlation_heatmap(self, filtered_data):
+        import seaborn as sns
+        import matplotlib.pyplot as plt
 
-            fig = px.bar(
-                missing,
-                x='Column',
-                y='Missing %',
-                title='Percentage of Missing Data by Column',
-                text_auto='.1f'
-            )
-            st.plotly_chart(fig)
+        if filtered_data is not None and not filtered_data.empty:
+            numeric_data = filtered_data[['PRICE', 'REVIEW_RATE_NUMBER', 'MINIMUM_NIGHTS']].copy()
+            numeric_data = numeric_data.apply(pd.to_numeric, errors='coerce')
+            corr = numeric_data.corr()
+
+            fig, ax = plt.subplots()
+            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
+            st.pyplot(fig)

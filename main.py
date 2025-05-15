@@ -132,7 +132,7 @@ with tab2:
         charts.display_room_type_counts_by_neighbourhood(filtered_data)
         charts.display_average_price_by_room_type(filtered_data)
         charts.display_listing_count_by_neighbourhood_group(filtered_data)
-
+        charts.display_correlation_heatmap(filtered_data)
     else:
         st.warning("No data available for chart visualization.")
 
